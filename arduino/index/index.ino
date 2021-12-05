@@ -36,7 +36,7 @@ void loop(){
  Serial.println("%"); //IMPRIME O CARACTERE NO MONITOR SERIAL
  msg = String(valorLido);
  msg.toCharArray(msgTemp, msg.length() + 1);
- if(mqttClient.publish("temperatura", msgTemp)){
+ if(mqttClient.publish("humidade", msgTemp)){
   Serial.println("Mensagem enviada ao Broker");
  }else{
   erroMqtt = mqttClient.state();
