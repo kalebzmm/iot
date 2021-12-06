@@ -5,6 +5,7 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const mqtt = require('mqtt');
 const mainTopic = 'humidade';
+const irrigacaoTopic = 'irrigacao';
 
 const io = new Server(server, {
     cors: {
@@ -22,12 +23,14 @@ const client = mqtt.connect('mqtt://localhost:1883', {
 })
 
 client.on('connect', () => {
-    client.subscribe([mainTopic], () => {
-        console.log(`Subscribe to topic '${mainTopic}'`)
+    client.subscribe([mainTopic, irrigacaoTopic], () => {
+        console.log(`Inscrito nos topicos '${mainTopic}' e '${irrigacaoTopic}'`)
     })
     client.on('message', (topic, payload) => {
         if(topic == mainTopic){
             io.emit('humidade', payload.toString());
+        }else if(topic == irrigacaoTopic){
+            io.emit('irrigacao', payload.toString());
         }
     })
 })
@@ -39,7 +42,21 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-  console.log('Usuario conectado');
+    socket.on('irrigacao', (comando) => {
+        switch(comando){
+            case '1':
+                console.log("LIGAR");
+                client.publish('irrigacao', '1');
+                break;
+            case '0':
+                console.log("DESLIGAR");
+                client.publish('irrigacao', '0');
+                break;
+            default:
+                console.log("COMANDO INVALIDO:", comando);
+        }
+    });
+    console.log('Usuario conectado');
 });
 
 server.listen(3000, () => {
