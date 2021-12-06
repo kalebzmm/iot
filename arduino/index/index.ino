@@ -3,6 +3,7 @@
 
 byte mac[] = {  0x90, 0xA2, 0xDA, 0x0D, 0xF6, 0xFF }; 
 byte ip[] = {  192, 168, 15, 189 };
+boolean demonstracao = true;
 
 EthernetClient ethClient;
 PubSubClient mqttClient(ethClient);
@@ -28,6 +29,16 @@ void callback(char* topic, byte* payload, unsigned int length) {
   if(comando == 1){
     Serial.println("IRRIGANDO");
     digitalWrite(LED_BUILTIN, HIGH);
+    if(demonstracao == true){
+      for(int x = 0; x <= 5; x++){
+        if(x == 1) mqttClient.publish("humidade", "10");
+        if(x == 2) mqttClient.publish("humidade", "15");
+        if(x == 3) mqttClient.publish("humidade", "20");
+        if(x == 4) mqttClient.publish("humidade", "25");
+        if(x == 5) mqttClient.publish("humidade", "30");
+        delay(1000); 
+      }      
+    }
     delay(3000);
     digitalWrite(LED_BUILTIN, LOW);
     Serial.println("PARANDO IRRIGACAO");
